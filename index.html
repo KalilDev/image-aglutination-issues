@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Complicações do uso de imagens em PDFs no EAD</title>
+    <title>Complicações no agrupamento de imagens em PDFs</title>
     <style type="text/css">
         body {
             margin: 40px auto;
@@ -28,29 +28,81 @@
             }
         }
 
+        figure.center-figure {
+            margin: 10px;
+        }
+
+        figure.center-figure figcaption {
+            font-size: .7em;
+            text-align: center;
+        }
+
+        figure.center-figure img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 80%;
+        }
+
         h1,
         h2,
         h3 {
             line-height: 1.2
         }
     </style>
+    <!--
+        Este script contêm o código para rotacionar um ImageElement (ou qualquer
+        outro Element) 90 graus pra esquerda. Funciona com todos os css <angle>
+        e funciona com e sem "transform"s anteriores.
+
+        Para transformar isto em uma extensão, deve-se injetar um click listener
+        em todos os Element que devem ser rotacionados para chamar esta função.
+    -->
+    <script>
+        const rotateImageLeft = function (image) {
+            const setTransform = function (t) {
+                image.style["transform"] = t
+            }
+            let previousTransform = image.style["transform"]
+
+            // Just set the transform if none was set.
+            if (previousTransform === "" || previousTransform === undefined || previousTransform === null) {
+                return setTransform("rotate(-90deg)")
+            }
+
+            // If there were transforms, and the last one is an rotation, parse
+            // the rotation and add -90deg to it
+            let transformParts = previousTransform.split(" ")
+            if (transformParts[transformParts.length - 1].startsWith("rotate")) {
+                let rotate = transformParts.pop()
+                const rotateRegex = /rotate\([ \t]*((?:-|\+|)[0-9]+(?:\.[0-9]+|))(deg|grad|rad|turn)[ \t]*\)/
+
+                let _, value, type
+                [_, value, type] = rotateRegex.exec(rotate)
+                value = Number.parseFloat(value)
+
+                switch (type) {
+                    case 'deg': value -= 90; break;
+                    case 'grad': value -= 100; break;
+                    case 'rad': value -= 1.75; break;
+                    case 'turn': value -= 0.5; break;
+                }
+
+                return setTransform(transformParts.join(" ") + 'rotate(' + value + type + ')')
+
+            }
+
+            // If the last transform was not an rotation, add a -90deg rotation
+            return setTransform(previousTransform + " rotate(-90deg)")
+        }
+    </script>
 </head>
 
 <body>
     <header>
-        <h1>Complicações na aglutinação de imagens em PDFs</h1>
+        <h1>Complicações no agrupamento de imagens em PDFs</h1>
         <aside>Pedro Morato Kalil</aside>
     </header>
-    <!--h2> Resumo </h2>
-    <p>Com a pandemia do SARS-COV-2 em 2020, foi iniciada uma quarentena,
-        interrompendo temporariamente várias atividades economicas e sociais,
-        incluindo a educação presencial. As instituições educacionais adotaram o
-        ensino à distância para evitar a perda de um ano letivo, porém com a
-        imprecedencia da situação, não houve tempo para preparo então adaptações são
-        feitas constantemente nos métodos adotados. Uma das adaptações feita pelos
-        educadores foi a exigir o envio de atividades avaliadas escritas à mão em
-        um unico arquivo PDF para seu posterior envio ao avaliador, porém isto
-        acarretou nos problemas técnicos inesperados que serão abordados.</p-->
 
     <h2> Palavras-chave </h2>
     <ul>
@@ -66,72 +118,74 @@
     <p>Com a pandemia do SARS-COV-2 em 2020, foi iniciada uma quarentena,
         interrompendo temporariamente várias atividades econômicas e sociais,
         incluindo a educação presencial. As instituições educacionais adotaram o
-        ensino à distância para evitar a perda de um ano letivo, porém com a
-        improcedência da situação, não houve tempo para preparo, logo adaptações são
-        feitas constantemente nos métodos adotados.
+        ensino à distância para evitar a perda de um ano letivo, entretanto, com
+        o caráter inédito e urgente da situação, não houve tempo para preparo,
+        logo adaptações são feitas constantemente nos métodos adotados pelos
+        educadores.
     </p>
 
-    <p>Uma das adaptações feita pelos educadores foi a exigir o envio de
-        atividades avaliadas escritas à mão em um único arquivo PDF para seu
-        posterior envio ao avaliador, porém isto acarretou em um problema:
-        Algumas imagens não estavam na orientação correta.
+    <p>Uma destas foi a exigir o envio de atividades avaliadas escritas à mão em
+        um único arquivo PDF, contendo todas as imagens da atividade, porém isto
+        acarretou em um problema: Algumas imagens não estavam na orientação correta.
     </p>
 
-    <p>Inicialmente pensou-se que o fato dava-se de negligência dos alunos ao
-        enviar o arquivo PDF, porém foi descoberto, ao analisar as imagens
-        anexadas ao PDF, que elas estavam sim na orientação correta. Por
-        inconsistência em vários programas, porém, em alguns dispositivos a
+    <p>Inicialmente pensou-se que isto deu-se da negligência dos alunos ao
+        enviar o arquivo PDF, mas foi descoberto, ao analisar as imagens
+        anexadas ao PDF, que elas estavam sim na orientação correta. Por uma
+        inconsistência em vários programas, contudo, em alguns dispositivos a
         orientação da imagem estava correta e em outros não. Um comportamento
         errático, inesperado vindo de máquinas determinísticas.
     </p>
 
     <h2> PDF </h2>
 
-    <p> PDF é um formato de arquivo criado na década de 1990 pela Adobe com um
+    <p> PDF é um formato de arquivo, criado na década de 1990 pela Adobe com um
         layout fixo, com o intuito de ter seu conteúdo visualmente
-        <strong>idêntico</strong> em qualquer combinação de aparelho e programa
-        visualizador.
+        <strong>idêntico</strong> em qualquer combinação de dispositivo e
+        aplicação visualizadora.
     </p>
 
     <h2> JPEG </h2>
 
-    <p> JPEG é um formato de compressão de imagens, com perdas, criado em 1992,
-        e usado atualmente por aparelhos Android, além de outras câmeras,
-        e aparelhos iOS por padrão até a versão 11 do sistema operacional,
-        lançado publicamente em setembro de 2017. </p>
+    <p> JPEG é um formato de compressão com perdas de imagens, criado em 1992
+        e usado atualmente por aparelhos Android, câmeras, e aparelhos iOS (por
+        padrão até a versão 11 do sistema operacional, lançado publicamente em
+        setembro de 2017). </p>
 
     <p> O formato de imagem JPEG/Exif utiliza a compressão JPEG e o formato Exif
         para armazenar os dados comprimidos e metadados.
-        É a variante usada em dispositivos, como
-        os supracitados, e uma segunda variante, JPEG/JFIF, é mais usada na
-        internet.
+        É a variante usada nos dispositivos supracitados. Uma segunda variante,
+        JPEG/JFIF, é mais usada na internet.
     </p>
 
     <h2> EXIF </h2>
 
     <p> EXIF é um formato de armazenamento de imagens desenvolvido em 1995,
-        similar ao formato anterior tiff. É utilizado com a compressão JPEG para
+        similar ao formato anterior "tiff". É utilizado com a compressão JPEG para
         criar imagens comprimidas com metadados, dentre outras aplicações. Estes
         metadados consistem em informações úteis para câmeras, como: data e hora
         da captura, abertura da câmera, ISO da câmera, thumbnail da imagem,
-        localização da captura, orientação da câmera, dentre outras.
+        localização da captura, orientação da câmera, etc.
     </p>
 
-    <p> A orientação da câmera será focada, visto que é a causadora do problema.
+    <p> A orientação da câmera é o objeto de estudo deste artigo, visto que é a
+        causadora do problema.
+    </p>
+    <p>
         Câmeras digitais precisavam de armazenar esta informação pois para
         rotacionar uma imagem comprimida, deve-se descomprimir a imagem, iterar
-        ao longo de cada pixel da imagem e colocá-lo na posição correta na nova
-        imagem, e após isso, comprimir-la novamente. Uma operação extremamente
-        lenta, inviável em câmeras digitais do passado.
+        cada pixel da imagem e colocando-o na posição correta e após isso,
+        comprimindo-na novamente. Uma operação extremamente lenta, inviável em
+        câmeras digitais do passado.
     </p>
 
     <p> Com a orientação armazenada nos metadados EXIF, a câmera pode manter a
-        imagem armazenada da forma que já está e aplicar uma transformação no
-        momento da exibição da imagem.
+        imagem armazenada, inalterada, e aplicar uma transformação no momento da
+        exibição da imagem.
     </p>
 
     <p> Aparelhos celulares e câmeras modernas ainda usam este metadado EXIF
-        para poupar ciclos e bateria, visto que aplicar a transformação na
+        para poupar ciclos e bateria, visto que aplicar esta transformação na
         exibição é uma operação muito mais eficiente, porém programas que
         manipulam ou visualizam imagens devem também aplicar esta transformação,
         o que não é sempre feito, resultando nas inconsistências observadas.
@@ -146,7 +200,7 @@
     </ul>
 
     <p> Nele, Pedro, utilizando seu telefone Android, tirou as fotos com o
-        telefone em orientação paisagem, e alterou a rotação para enviá-las
+        este na orientação paisagem, e alterou a rotação para enviá-las
         corretamente para o avaliador. Utilizou o site <a href="https://imagetopdf.com/">https://imagetopdf.com/</a>
         para criar um unico PDF, conforme exigido, e o enviou.
     </p>
@@ -171,12 +225,20 @@
     </p>
 
     <p> O programa chamado "exiftool" foi utilizado com a opção "-htmlDump" para
-        criar uma página da web para visualizar os metadados exif de cada imagem.
+        criar uma página da web que permite visualizar os metadados exif de cada
+        imagem.
     </p>
 
-    <p> Nestes dumps, é possível ver no início do arquivo, no offset 0x0022, a
-        orientação (IFD0-02 Orientation), e ao passar o mouse por cima, o valor
-        do campo é revelado: 6.
+    <ul>
+        <li><a href="dumps/image-1.jpg-dump.html">Metadados imagem 1</a></li>
+        <li><a href="dumps/image-2.jpg-dump.html">Metadados imagem 2</a></li>
+        <li><a href="dumps/image-3.jpg-dump.html">Metadados imagem 3</a></li>
+        <li><a href="dumps/image-4.jpg-dump.html">Metadados imagem 4</a></li>
+    </ul>
+
+    <p> Nestes websites, é possível ver no início do arquivo, no offset 0x0022,
+        a orientação (IFD0-02 Orientation), e ao passar o mouse por cima, o
+        valor do campo é revelado: 6.
     </p>
 
     <p> Ao consultar a <a href="https://www.exif.org/Exif2-2.PDF">Especificação EXIF</a>,
@@ -187,48 +249,53 @@
     <p> Realizando esta rotação, todas as imagens estarão na orientação correta.
     </p>
 
-    <ul>
-        <li><a href="dumps/image-1.jpg-dump.html">Metadados imagem 1</a></li>
-        <li><a href="dumps/image-2.jpg-dump.html">Metadados imagem 2</a></li>
-        <li><a href="dumps/image-3.jpg-dump.html">Metadados imagem 3</a></li>
-        <li><a href="dumps/image-4.jpg-dump.html">Metadados imagem 4</a></li>
-    </ul>
-
     <h1> Conclusão </h1>
 
     <p> Com estas inconsistências, torna-se impossível cobrança avaliada da
-        orientação correta nos arquivos, pois é muito difícil distinguir alunos
-        negligentes deste problema técnico, errático.
+        orientação correta das imagens, pois é muito difícil distinguir alunos
+        negligentes deste problema técnico.
     </p>
 
     <p> Além disso, como o layout de arquivos PDF é invariável, o problema é
-        agravado, visto que não há como rotacionar uma única imagem nele, e
-        extrair cada imagem individualmente é imprático.
+        agravado, visto que não há como rotacionar facilmente uma única imagem
+        nele, restando então somente a extração de cada imagem do arquivo. Algo
+        imprático para os avaliadores.
     </p>
 
-    <p> Uma das possibilidades para solucionar este problema é a criação de uma
-        simples extensão para o navegador que apresente um botão de rotação em
-        todas as imagens. Isto possibilitará uma fácil avaliação por parte do
-        avaliador e evitará todos os contras que vêm com os PDFs, além da
-        necessidade de todos os alunos aprenderem a faze-lo.
+    <p> Uma das possibilidades para solucionar este problema é a utilização de
+        uma simples extensão para o navegador do avaliador que permita fácil
+        rotação de imagens.
+    </p>
+    <p> Isto possibilitará uma fácil avaliação por parte dele e evitará o
+        problema da orientação, já que a solução estará a um click de distância,
+        além de evitar que todos os alunos tenham que aprender a criar o PDF, e
+        tenham que fazê-lo com todas atividades.
     </p>
 
-    <p> Outra das possibilidades de solução é testar uma ou mais ferramentas
-        fáceis e acessíveis, assegurando que o problema não está presente nestas,
-        e recomendá-las aos alunos, de preferência anexando-a às tarefas que
-        possam passar pelo problema analisado. Assim, garante-se que PDFs sejam
-        sempre criados corretamente, para poderem ser visualizados corretamente
-        pelo avaliador. Ressalta-se, porém, que websites são muito mais
-        acessíveis que aplicações por seu caráter universal.
+    <p> Todas as imagens neste artigo serão rotacionadas ao serem clicadas,
+        demonstrando a viabilidade e facilidade de uso da possível extensão.
+    </p>
+
+    <p> Outra solução é testar uma ou mais ferramentas de criação de PDF simples
+        e acessíveis, assegurando que o problema da orientação não está presente
+        nestas, e recomendá-las aos alunos, de preferência anexando-a às tarefas.
+    </p>
+    <p> Assim, garante-se que PDFs sejam sempre criados corretamente para
+        poderem então ser visualizados corretamente pelo avaliador. Ressalta-se,
+        porém, que estas ferramentas deverão ser websites, visto que são muito
+        mais acessíveis que aplicações por seu caráter universal, funcionando em
+        telefones Android, iOS e desktops Windows, MacOS e Linux.
     </p>
 
     <h1> Imagens </h1>
-    <figure>
-        <img src="libre-office.png"></img>
+
+    <figure class="center-figure">
+        <img src="libre-office.png" onclick="rotateImageLeft(this)"></img>
         <figcaption>fig1</figcaption>
     </figure>
-    <figure>
-        <img src="orientation.png"></img>
+
+    <figure class="center-figure">
+        <img src="orientation.png" onclick="rotateImageLeft(this)"></img>
         <figcaption>fig2</figcaption>
     </figure>
 
