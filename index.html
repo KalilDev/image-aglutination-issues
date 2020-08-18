@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Complicações do uso de imagens em PDFs no EAD</title>
+    <style type="text/css">
+        body {
+            margin: 40px auto;
+            max-width: 650px;
+            line-height: 1.6;
+            font-size: 18px;
+            padding: 0 10px
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #DDD;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            body {
+                background-color: #FAFAFA;
+                color: #444;
+            }
+        }
+
+        h1,
+        h2,
+        h3 {
+            line-height: 1.2
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Complicações na aglutinação de imagens em PDFs</h1>
+        <aside>Pedro Morato Kalil</aside>
+    </header>
+    <!--h2> Resumo </h2>
+    <p>Com a pandemia do SARS-COV-2 em 2020, foi iniciada uma quarentena,
+        interrompendo temporariamente várias atividades economicas e sociais,
+        incluindo a educação presencial. As instituições educacionais adotaram o
+        ensino à distância para evitar a perda de um ano letivo, porém com a
+        imprecedencia da situação, não houve tempo para preparo então adaptações são
+        feitas constantemente nos métodos adotados. Uma das adaptações feita pelos
+        educadores foi a exigir o envio de atividades avaliadas escritas à mão em
+        um unico arquivo PDF para seu posterior envio ao avaliador, porém isto
+        acarretou nos problemas técnicos inesperados que serão abordados.</p-->
+
+    <h2> Palavras-chave </h2>
+    <ul>
+        <li> PDF </li>
+        <li> JPEG </li>
+        <li> EXIF </li>
+        <li> Ensino à distância </li>
+        <li> Didática </li>
+    </ul>
+
+    <h1> Introdução </h1>
+
+    <p>Com a pandemia do SARS-COV-2 em 2020, foi iniciada uma quarentena,
+        interrompendo temporariamente várias atividades econômicas e sociais,
+        incluindo a educação presencial. As instituições educacionais adotaram o
+        ensino à distância para evitar a perda de um ano letivo, porém com a
+        improcedência da situação, não houve tempo para preparo, logo adaptações são
+        feitas constantemente nos métodos adotados.
+    </p>
+
+    <p>Uma das adaptações feita pelos educadores foi a exigir o envio de
+        atividades avaliadas escritas à mão em um único arquivo PDF para seu
+        posterior envio ao avaliador, porém isto acarretou em um problema:
+        Algumas imagens não estavam na orientação correta.
+    </p>
+
+    <p>Inicialmente pensou-se que o fato dava-se de negligência dos alunos ao
+        enviar o arquivo PDF, porém foi descoberto, ao analisar as imagens
+        anexadas ao PDF, que elas estavam sim na orientação correta. Por
+        inconsistência em vários programas, porém, em alguns dispositivos a
+        orientação da imagem estava correta e em outros não. Um comportamento
+        errático, inesperado vindo de máquinas determinísticas.
+    </p>
+
+    <h2> PDF </h2>
+
+    <p> PDF é um formato de arquivo criado na década de 1990 pela Adobe com um
+        layout fixo, com o intuito de ter seu conteúdo visualmente
+        <strong>idêntico</strong> em qualquer combinação de aparelho e programa
+        visualizador.
+    </p>
+
+    <h2> JPEG </h2>
+
+    <p> JPEG é um formato de compressão de imagens, com perdas, criado em 1992,
+        e usado atualmente por aparelhos Android, além de outras câmeras,
+        e aparelhos iOS por padrão até a versão 11 do sistema operacional,
+        lançado publicamente em setembro de 2017. </p>
+
+    <p> O formato de imagem JPEG/Exif utiliza a compressão JPEG e o formato Exif
+        para armazenar os dados comprimidos e metadados.
+        É a variante usada em dispositivos, como
+        os supracitados, e uma segunda variante, JPEG/JFIF, é mais usada na
+        internet.
+    </p>
+
+    <h2> EXIF </h2>
+
+    <p> EXIF é um formato de armazenamento de imagens desenvolvido em 1995,
+        similar ao formato anterior tiff. É utilizado com a compressão JPEG para
+        criar imagens comprimidas com metadados, dentre outras aplicações. Estes
+        metadados consistem em informações úteis para câmeras, como: data e hora
+        da captura, abertura da câmera, ISO da câmera, thumbnail da imagem,
+        localização da captura, orientação da câmera, dentre outras.
+    </p>
+
+    <p> A orientação da câmera será focada, visto que é a causadora do problema.
+        Câmeras digitais precisavam de armazenar esta informação pois para
+        rotacionar uma imagem comprimida, deve-se descomprimir a imagem, iterar
+        ao longo de cada pixel da imagem e colocá-lo na posição correta na nova
+        imagem, e após isso, comprimir-la novamente. Uma operação extremamente
+        lenta, inviável em câmeras digitais do passado.
+    </p>
+
+    <p> Com a orientação armazenada nos metadados EXIF, a câmera pode manter a
+        imagem armazenada da forma que já está e aplicar uma transformação no
+        momento da exibição da imagem.
+    </p>
+
+    <p> Aparelhos celulares e câmeras modernas ainda usam este metadado EXIF
+        para poupar ciclos e bateria, visto que aplicar a transformação na
+        exibição é uma operação muito mais eficiente, porém programas que
+        manipulam ou visualizam imagens devem também aplicar esta transformação,
+        o que não é sempre feito, resultando nas inconsistências observadas.
+    </p>
+
+    <h1> Desenvolvimento </h1>
+
+    <p> Foi observado o seguinte PDF, criado e enviado por Pedro Abrahão Ramos:
+    </p>
+    <ul>
+        <li><a href="imagens.pdf">PDF com imagens</a></li>
+    </ul>
+
+    <p> Nele, Pedro, utilizando seu telefone Android, tirou as fotos com o
+        telefone em orientação paisagem, e alterou a rotação para enviá-las
+        corretamente para o avaliador. Utilizou o site <a href="https://imagetopdf.com/">https://imagetopdf.com/</a>
+        para criar um unico PDF, conforme exigido, e o enviou.
+    </p>
+
+    <p> Inicialmente recebeu avaliação nula pois a rotação das imagens não
+        estava correta para o avaliador em questão.
+    </p>
+
+    <p> O arquivo foi baixado e aberto com a ferramenta "LibreOffice Draw", onde
+        pode-se extrair as imagens diretamente, inalteradas, do arquivo PDF. <sup>fig 1</sup>
+    </p>
+    <ul>
+        <li><a href="images/image-1.jpg">Imagem 1</a></li>
+        <li><a href="images/image-2.jpg">Imagem 2</a></li>
+        <li><a href="images/image-3.jpg">Imagem 3</a></li>
+        <li><a href="images/image-4.jpg">Imagem 4</a></li>
+    </ul>
+
+    <p> Ao fazer o download destas imagens e observar com algum visualizador,
+        pode-se perceber que elas estão orientadas corretamente, diferentemente
+        do PDF. Com isto é preciso encontrar a fonte da inconsistência.
+    </p>
+
+    <p> O programa chamado "exiftool" foi utilizado com a opção "-htmlDump" para
+        criar uma página da web para visualizar os metadados exif de cada imagem.
+    </p>
+
+    <p> Nestes dumps, é possível ver no início do arquivo, no offset 0x0022, a
+        orientação (IFD0-02 Orientation), e ao passar o mouse por cima, o valor
+        do campo é revelado: 6.
+    </p>
+
+    <p> Ao consultar a <a href="https://www.exif.org/Exif2-2.PDF">Especificação EXIF</a>,
+        pág. 24, É possível ver que para visualizar uma imagem com a orientação
+        6, é necessário rotação de 90 graus em sentido horário. <sup>fig 2</sup>
+    </p>
+
+    <p> Realizando esta rotação, todas as imagens estarão na orientação correta.
+    </p>
+
+    <ul>
+        <li><a href="dumps/image-1.jpg-dump.html">Metadados imagem 1</a></li>
+        <li><a href="dumps/image-2.jpg-dump.html">Metadados imagem 2</a></li>
+        <li><a href="dumps/image-3.jpg-dump.html">Metadados imagem 3</a></li>
+        <li><a href="dumps/image-4.jpg-dump.html">Metadados imagem 4</a></li>
+    </ul>
+
+    <h1> Conclusão </h1>
+
+    <p> Com estas inconsistências, torna-se impossível cobrança avaliada da
+        orientação correta nos arquivos, pois é muito difícil distinguir alunos
+        negligentes deste problema técnico, errático.
+    </p>
+
+    <p> Além disso, como o layout de arquivos PDF é invariável, o problema é
+        agravado, visto que não há como rotacionar uma única imagem nele, e
+        extrair cada imagem individualmente é imprático.
+    </p>
+
+    <p> Uma das possibilidades para solucionar este problema é a criação de uma
+        simples extensão para o navegador que apresente um botão de rotação em
+        todas as imagens. Isto possibilitará uma fácil avaliação por parte do
+        avaliador e evitará todos os contras que vêm com os PDFs, além da
+        necessidade de todos os alunos aprenderem a faze-lo.
+    </p>
+
+    <p> Outra das possibilidades de solução é testar uma ou mais ferramentas
+        fáceis e acessíveis, assegurando que o problema não está presente nestas,
+        e recomendá-las aos alunos, de preferência anexando-a às tarefas que
+        possam passar pelo problema analisado. Assim, garante-se que PDFs sejam
+        sempre criados corretamente, para poderem ser visualizados corretamente
+        pelo avaliador. Ressalta-se, porém, que websites são muito mais
+        acessíveis que aplicações por seu caráter universal.
+    </p>
+
+    <h1> Imagens </h1>
+    <figure>
+        <img src="libre-office.png"></img>
+        <figcaption>fig1</figcaption>
+    </figure>
+    <figure>
+        <img src="orientation.png"></img>
+        <figcaption>fig2</figcaption>
+    </figure>
+
+    <h1> Referências </h1>
+    <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Portable_Document_Format">PDF</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Exchangeable_image_file_format">EXIF</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/JPEG">JPEG</a></li>
+        <li><a href="https://www.exif.org/Exif2-2.PDF">Especificação EXIF</a></li>
+    </ul>
+</body>
+
+</html>
